@@ -1,0 +1,197 @@
+{
+    "common": {
+        "logo": "InvestInvincible",
+        "nav": {
+            "home": "Home",
+            "properties": "Properties",
+            "swap": "Swap",
+            "portfolio": "Portfolio"
+        },
+        "connectWallet": "Connect Wallet",
+        "balance": "Balance",
+        "sol": "SOL",
+        "viewAll": "View All",
+        "learnMore": "Learn More",
+        "invest": "Invest",
+        "loading": "Loading...",
+        "back": "Back",
+        "poweredBy": "Powered by Solana"
+    },
+    "landing": {
+        "hero": {
+            "title": "Invest in Real Estate with Solana",
+            "subtitle": "Tokenized real estate in Kazakhstan. Buy apartment shares with SOL, earn rental income and capital appreciation.",
+            "cta": "Browse Properties",
+            "ctaSecondary": "How It Works"
+        },
+        "howItWorks": {
+            "title": "How It Works",
+            "subtitle": "Four simple steps to your first investment",
+            "step1": {
+                "title": "Get SOL",
+                "description": "Swap USDT or USDS to SOL right on our platform"
+            },
+            "step2": {
+                "title": "Choose Property",
+                "description": "Browse the catalog of verified real estate properties"
+            },
+            "step3": {
+                "title": "Invest Tokens",
+                "description": "Buy property tokens with SOL — even a small fraction"
+            },
+            "step4": {
+                "title": "Earn Returns",
+                "description": "Rental income and capital appreciation go to your wallet"
+            }
+        },
+        "featured": {
+            "title": "Featured Properties",
+            "subtitle": "The most popular investment opportunities right now"
+        },
+        "stats": {
+            "title": "Platform in Numbers",
+            "invested": "SOL Invested",
+            "properties": "Properties Listed",
+            "investors": "Active Investors",
+            "avgRoi": "Average ROI"
+        },
+        "cta": {
+            "title": "Start Investing Today",
+            "subtitle": "Join thousands of investors already earning on tokenized real estate",
+            "button": "Browse Properties"
+        }
+    },
+    "properties": {
+        "title": "Investment Properties",
+        "subtitle": "Choose a property to invest in",
+        "filters": {
+            "search": "Search by name or address...",
+            "city": "City",
+            "allCities": "All Cities",
+            "rooms": "Rooms",
+            "allRooms": "Any",
+            "status": "Status",
+            "allStatuses": "All Statuses",
+            "sort": "Sort",
+            "newest": "Newest First",
+            "priceAsc": "Price ↑",
+            "priceDesc": "Price ↓",
+            "roiDesc": "ROI ↓",
+            "progressDesc": "Progress ↓",
+            "reset": "Reset"
+        },
+        "status": {
+            "upcoming": "Upcoming",
+            "active": "Active",
+            "funded": "Funded",
+            "completed": "Completed"
+        },
+        "card": {
+            "roi": "ROI",
+            "funded": "Funded",
+            "priceFrom": "from",
+            "perToken": "per token",
+            "details": "Details"
+        },
+        "empty": "No properties found. Try adjusting your filters.",
+        "found": "Properties found"
+    },
+    "property": {
+        "gallery": "Gallery",
+        "about": "About",
+        "specs": {
+            "area": "Area",
+            "rooms": "Rooms",
+            "floor": "Floor",
+            "year": "Year Built",
+            "developer": "Developer",
+            "type": "Type"
+        },
+        "investment": {
+            "title": "Investment",
+            "totalCost": "Total Cost",
+            "tokenPrice": "Token Price",
+            "tokensAvailable": "Tokens Available",
+            "progress": "Funding Progress",
+            "expectedRoi": "Expected ROI",
+            "amount": "Investment Amount (SOL)",
+            "tokensReceive": "You will receive tokens",
+            "investButton": "Invest",
+            "insufficientBalance": "Insufficient balance",
+            "success": "Investment successful!",
+            "tokensReceived": "Tokens received"
+        },
+        "oracle": {
+            "title": "Data Verification",
+            "verified": "Data verified by oracle",
+            "pending": "Verification in progress",
+            "description": "Property information is verified through a decentralized oracle. Ownership documents and valuation have been confirmed."
+        },
+        "similar": "Similar Properties"
+    },
+    "swap": {
+        "title": "Swap to SOL",
+        "subtitle": "Swap USDT or USDS to SOL for investments",
+        "from": "You Pay",
+        "to": "You Receive",
+        "rate": "Rate",
+        "fee": "Fee",
+        "balance": "Balance",
+        "amount": "Amount",
+        "swapButton": "Swap",
+        "swapping": "Swapping...",
+        "success": "Swap completed!",
+        "received": "Received",
+        "insufficientBalance": "Insufficient balance",
+        "enterAmount": "Enter amount",
+        "history": {
+            "title": "Swap History",
+            "empty": "No swap transactions"
+        },
+        "howItWorks": {
+            "title": "How Swap Works",
+            "step1": "Select currency (USDT or USDS)",
+            "step2": "Enter the amount to swap",
+            "step3": "Review the rate and fee",
+            "step4": "Confirm the swap — SOL will be sent to your wallet"
+        }
+    },
+    "portfolio": {
+        "title": "My Portfolio",
+        "subtitle": "Your investments and returns",
+        "summary": {
+            "totalBalance": "SOL Balance",
+            "totalInvested": "Total Invested",
+            "totalReturns": "Total Returns",
+            "activeInvestments": "Active Investments"
+        },
+        "investments": {
+            "title": "My Investments",
+            "tokens": "Tokens",
+            "invested": "Invested",
+            "roi": "ROI",
+            "date": "Date",
+            "status": "Status",
+            "active": "Active",
+            "completed": "Completed",
+            "pending": "Pending"
+        },
+        "empty": {
+            "title": "You have no investments yet",
+            "subtitle": "Start investing in tokenized real estate now",
+            "cta": "Browse Properties"
+        }
+    },
+    "footer": {
+        "description": "Platform for investing in tokenized real estate on Solana blockchain",
+        "links": {
+            "about": "About Us",
+            "properties": "Properties",
+            "howItWorks": "How It Works",
+            "faq": "FAQ",
+            "terms": "Terms",
+            "privacy": "Privacy"
+        },
+        "rights": "All rights reserved"
+    }
+}
