@@ -302,7 +302,7 @@ export const MOCK_SWAP_HISTORY: SwapTransaction[] = [
 ];
 
 export const DEFAULT_WALLET = {
-    address: 'ABcDeFgHiJkLmNoPqRsTuVwXyZ1234567890abcd',
+    address: '7nYkPnMKrDJqLwkGbcoaYHFb4949bpNc5DzFXBTfcKU1',
     balance: 125.5,
     isConnected: true,
     tokenBalances: {

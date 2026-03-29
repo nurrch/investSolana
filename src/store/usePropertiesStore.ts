@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import type { Property, PropertyFilters, Investment } from '@/lib/types';
-import { MOCK_INVESTMENTS } from '@/lib/constants';
+import { getProperties, getInvestmentsByWallet } from '@/actions/properties';
 
 interface PropertiesStore {
     properties: Property[];
@@ -12,6 +12,8 @@ interface PropertiesStore {
     filters: PropertyFilters;
     isLoading: boolean;
 
+    loadProperties: (force?: boolean) => Promise<void>;
+    loadInvestments: (wallet: string) => Promise<void>;
     setProperties: (properties: Property[]) => void;
     setSelectedProperty: (property: Property | null) => void;
     setFilters: (filters: Partial<PropertyFilters>) => void;
@@ -97,9 +99,35 @@ export const usePropertiesStore = create<PropertiesStore>((set, get) => ({
     properties: [],
     filteredProperties: [],
     selectedProperty: null,
-    investments: MOCK_INVESTMENTS,
+    investments: [],
     filters: { ...defaultFilters },
     isLoading: false,
+
+    loadProperties: async (force?: boolean) => {
+        const { properties } = get();
+        if (!force && properties.length > 0) return;
+        set({ isLoading: true });
+        const data = await getProperties(force);
+        const { filters } = get();
+        set({
+            properties: data,
+            filteredProperties: filterProperties(data, filters),
+            isLoading: false,
+        });
+    },
+
+    loadInvestments: async (wallet: string) => {
+        try {
+            const data = await getInvestmentsByWallet(wallet);
+            const { investments: local } = get();
+            // Merge: backend data + any local investments not yet persisted
+            const backendIds = new Set(data.map((d) => d.id));
+            const unsaved = local.filter((l) => !backendIds.has(l.id));
+            set({ investments: [...data, ...unsaved] });
+        } catch {
+            // keep existing investments
+        }
+    },
 
     setProperties: (properties) => {
         set({ properties });

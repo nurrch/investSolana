@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { Building2 } from 'lucide-react';
-import { BalanceBadge } from './BalanceBadge';
+import { WalletButton } from '@/components/wallet/WalletButton';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Header() {
@@ -25,7 +25,7 @@ export function Header() {
 
                 {/* Right Side */}
                 <div className="flex items-center gap-3">
-                    <BalanceBadge />
+                    <WalletButton />
                     <LanguageSwitcher />
                 </div>
             </div>

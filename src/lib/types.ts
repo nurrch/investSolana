@@ -32,6 +32,7 @@ export interface Property {
     yearBuilt: number;
     developer: string;
     oracleVerified: boolean;
+    tokenMint?: string;
     createdAt: string;
 }
 

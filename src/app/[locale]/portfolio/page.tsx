@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
@@ -11,12 +12,20 @@ import { Badge } from '@/components/ui/Badge';
 import { useWalletStore } from '@/store/useWalletStore';
 import { usePropertiesStore } from '@/store/usePropertiesStore';
 import { formatSOL } from '@/lib/utils';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 export default function PortfolioPage() {
     const t = useTranslations('portfolio');
     const locale = useLocale();
     const balance = useWalletStore((s) => s.balance);
-    const investments = usePropertiesStore((s) => s.investments);
+    const walletAddress = useWalletStore((s) => s.address);
+    const isConnected = useWalletStore((s) => s.isConnected);
+    const { investments, loadInvestments } = usePropertiesStore();
+    const { setVisible } = useWalletModal();
+
+    useEffect(() => {
+        if (walletAddress) loadInvestments(walletAddress);
+    }, [walletAddress, loadInvestments]);
 
     const totalInvested = investments.reduce((sum, inv) => sum + inv.amountSOL, 0);
     const totalReturns = investments
@@ -42,6 +51,23 @@ export default function PortfolioPage() {
         completed: 'default',
         pending: 'warning',
     };
+
+    if (!isConnected) {
+        return (
+            <section className="py-20">
+                <Container className="max-w-xl text-center">
+                    <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary/10 mb-6 mx-auto">
+                        <Wallet className="h-10 w-10 text-primary" />
+                    </div>
+                    <h1 className="text-2xl font-bold mb-3">Подключите кошелёк</h1>
+                    <p className="text-muted mb-8">Для просмотра портфеля необходимо подключить Solana-кошелёк</p>
+                    <Button size="lg" onClick={() => setVisible(true)}>
+                        Connect Wallet
+                    </Button>
+                </Container>
+            </section>
+        );
+    }
 
     if (investments.length === 0) {
         return (

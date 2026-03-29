@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check } from 'lucide-react';
+import { Check, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useWalletStore } from '@/store/useWalletStore';
 import { usePropertiesStore } from '@/store/usePropertiesStore';
+import { investInProperty } from '@/actions/properties';
 import { formatSOL } from '@/lib/utils';
 import type { Property, Investment } from '@/lib/types';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 interface InvestFormProps {
     property: Property;
@@ -16,8 +18,11 @@ interface InvestFormProps {
 export function InvestForm({ property }: InvestFormProps) {
     const t = useTranslations('property.investment');
     const balance = useWalletStore((s) => s.balance);
+    const walletAddress = useWalletStore((s) => s.address);
+    const isConnected = useWalletStore((s) => s.isConnected);
     const subtractBalance = useWalletStore((s) => s.subtractBalance);
     const addInvestment = usePropertiesStore((s) => s.addInvestment);
+    const { setVisible } = useWalletModal();
 
     const [amount, setAmount] = useState('');
     const [isInvesting, setIsInvesting] = useState(false);
@@ -29,31 +34,50 @@ export function InvestForm({ property }: InvestFormProps) {
     const canInvest = amountNum > 0 && !insufficient && tokensReceived > 0;
 
     const handleInvest = async () => {
-        if (!canInvest) return;
+        if (!canInvest || !walletAddress) return;
 
         setIsInvesting(true);
-        // Simulate server action delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        subtractBalance(amountNum);
+        const result = await investInProperty(
+            property.id,
+            walletAddress,
+            amountNum,
+            tokensReceived
+        );
 
-        const investment: Investment = {
-            id: `inv-${Date.now()}`,
-            propertyId: property.id,
-            propertyTitle: property.title,
-            propertyImage: property.images[0]?.url ?? '',
-            amountSOL: amountNum,
-            tokensReceived,
-            date: new Date().toISOString().split('T')[0],
-            roi: property.roi,
-            status: 'active',
-        };
-        addInvestment(investment);
+        if (result.success) {
+            subtractBalance(amountNum);
 
-        setSuccess({ tokens: tokensReceived });
+            const investment: Investment = {
+                id: `inv-${Date.now()}`,
+                propertyId: property.id,
+                propertyTitle: property.title,
+                propertyImage: property.images[0]?.url ?? '',
+                amountSOL: amountNum,
+                tokensReceived,
+                date: new Date().toISOString().split('T')[0],
+                roi: property.roi,
+                status: 'active',
+            };
+            addInvestment(investment);
+            setSuccess({ tokens: tokensReceived });
+        }
+
         setIsInvesting(false);
         setAmount('');
     };
+
+    if (!isConnected) {
+        return (
+            <div className="text-center py-6 space-y-3">
+                <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 mx-auto">
+                    <Wallet className="h-6 w-6 text-primary" />
+                </div>
+                <p className="text-sm text-muted">Подключите кошелёк для инвестирования</p>
+                <Button onClick={() => setVisible(true)}>Connect Wallet</Button>
+            </div>
+        );
+    }
 
     if (success) {
         return (

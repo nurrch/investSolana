@@ -7,21 +7,14 @@ import { PropertyCard } from '@/components/properties/PropertyCard';
 import { PropertyFilters } from '@/components/properties/PropertyFilters';
 import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
 import { usePropertiesStore } from '@/store/usePropertiesStore';
-import { MOCK_PROPERTIES } from '@/lib/constants';
 
 export default function PropertiesPage() {
     const t = useTranslations('properties');
-    const { filteredProperties, isLoading, setProperties, setLoading } = usePropertiesStore();
+    const { filteredProperties, isLoading, loadProperties } = usePropertiesStore();
 
     useEffect(() => {
-        setLoading(true);
-        // Simulate API fetch
-        const timer = setTimeout(() => {
-            setProperties(MOCK_PROPERTIES);
-            setLoading(false);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [setProperties, setLoading]);
+        loadProperties();
+    }, [loadProperties]);
 
     return (
         <section className="py-12">
