@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { PropertyCard } from '@/components/properties/PropertyCard';
-import { usePropertiesStore } from '@/store/usePropertiesStore';
+import { useProperties } from '@/hooks/useProperties';
 import { Animate } from '@/components/ui/Animate';
 
 export function FeaturedProperties() {
@@ -15,11 +14,7 @@ export function FeaturedProperties() {
     const tCommon = useTranslations('common');
     const locale = useLocale();
 
-    const { properties: allProperties, loadProperties } = usePropertiesStore();
-
-    useEffect(() => {
-        loadProperties();
-    }, [loadProperties]);
+    const { properties: allProperties } = useProperties();
 
     const properties = allProperties.filter((p) => p.status === 'active').slice(0, 4);
 
@@ -44,7 +39,7 @@ export function FeaturedProperties() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {properties.map((property, i) => (
                         <Animate key={property.id} delay={i * 100} direction="up">
-                            <PropertyCard property={property} />
+                            <PropertyCard property={property} priority={i === 0} />
                         </Animate>
                     ))}
                 </div>

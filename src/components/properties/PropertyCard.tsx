@@ -12,9 +12,10 @@ import type { Property } from '@/lib/types';
 
 interface PropertyCardProps {
     property: Property;
+    priority?: boolean;
 }
 
-export function PropertyCard({ property }: PropertyCardProps) {
+export function PropertyCard({ property, priority }: PropertyCardProps) {
     const t = useTranslations('properties');
     const locale = useLocale();
     const progress = getFundingPercent(property.tokensSold, property.tokensTotal);
@@ -37,6 +38,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
                         fill
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        priority={priority}
+                        loading={priority ? 'eager' : 'lazy'}
                     />
                     <div className="absolute top-3 left-3">
                         <StatusBadge status={property.status} label={statusLabels[property.status]} />

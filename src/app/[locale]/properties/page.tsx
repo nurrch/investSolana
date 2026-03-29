@@ -1,20 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Container } from '@/components/ui/Container';
 import { PropertyCard } from '@/components/properties/PropertyCard';
 import { PropertyFilters } from '@/components/properties/PropertyFilters';
 import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
-import { usePropertiesStore } from '@/store/usePropertiesStore';
+import { useProperties } from '@/hooks/useProperties';
 
 export default function PropertiesPage() {
     const t = useTranslations('properties');
-    const { filteredProperties, isLoading, loadProperties } = usePropertiesStore();
-
-    useEffect(() => {
-        loadProperties();
-    }, [loadProperties]);
+    const { filteredProperties, isLoading } = useProperties();
 
     return (
         <section className="py-12">
@@ -44,8 +39,8 @@ export default function PropertiesPage() {
                     </div>
                 ) : filteredProperties.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredProperties.map((property) => (
-                            <PropertyCard key={property.id} property={property} />
+                        {filteredProperties.map((property, i) => (
+                            <PropertyCard key={property.id} property={property} priority={i === 0} />
                         ))}
                     </div>
                 ) : (
