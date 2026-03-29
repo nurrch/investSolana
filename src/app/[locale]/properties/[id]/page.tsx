@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
@@ -14,10 +14,8 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { InvestForm } from '@/components/properties/InvestForm';
 import { PropertyCard } from '@/components/properties/PropertyCard';
-import { usePropertiesStore } from '@/store/usePropertiesStore';
-import { getPropertyById } from '@/actions/properties';
+import { useProperty } from '@/hooks/useProperty';
 import { formatSOL, getFundingPercent } from '@/lib/utils';
-import type { Property } from '@/lib/types';
 
 export default function PropertyDetailPage() {
     const t = useTranslations('property');
@@ -27,18 +25,8 @@ export default function PropertyDetailPage() {
     const params = useParams();
     const id = params?.id as string;
 
-    const [property, setProperty] = useState<Property | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { property, loading, similar } = useProperty(id);
     const [selectedImage, setSelectedImage] = useState(0);
-    const { properties: allProperties, loadProperties } = usePropertiesStore();
-
-    useEffect(() => {
-        loadProperties();
-        getPropertyById(id).then((p) => {
-            setProperty(p);
-            setLoading(false);
-        });
-    }, [id, loadProperties]);
 
     if (loading) {
         return (
@@ -92,10 +80,6 @@ export default function PropertyDetailPage() {
         { icon: Calendar, label: t('specs.year'), value: String(property.yearBuilt) },
         { icon: Landmark, label: t('specs.developer'), value: property.developer },
     ];
-
-    const similar = allProperties.filter(
-        (p) => p.id !== property.id && p.location.city === property.location.city
-    ).slice(0, 3);
 
     return (
         <section className="py-12">

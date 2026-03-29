@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
@@ -9,34 +8,27 @@ import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { useWalletStore } from '@/store/useWalletStore';
-import { usePropertiesStore } from '@/store/usePropertiesStore';
+import { usePortfolio } from '@/hooks/usePortfolio';
 import { formatSOL } from '@/lib/utils';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 export default function PortfolioPage() {
     const t = useTranslations('portfolio');
     const locale = useLocale();
-    const balance = useWalletStore((s) => s.balance);
-    const walletAddress = useWalletStore((s) => s.address);
-    const isConnected = useWalletStore((s) => s.isConnected);
-    const { investments, loadInvestments } = usePropertiesStore();
+    const {
+        isConnected,
+        investments,
+        activeCount,
+        formattedBalance,
+        formattedInvested,
+        formattedReturns,
+    } = usePortfolio();
     const { setVisible } = useWalletModal();
 
-    useEffect(() => {
-        if (walletAddress) loadInvestments(walletAddress);
-    }, [walletAddress, loadInvestments]);
-
-    const totalInvested = investments.reduce((sum, inv) => sum + inv.amountSOL, 0);
-    const totalReturns = investments
-        .filter((i) => i.status === 'active')
-        .reduce((sum, inv) => sum + inv.amountSOL * (inv.roi / 100), 0);
-    const activeCount = investments.filter((i) => i.status === 'active').length;
-
     const stats = [
-        { icon: Wallet, label: t('summary.totalBalance'), value: `${formatSOL(balance)} SOL`, accent: true },
-        { icon: PiggyBank, label: t('summary.totalInvested'), value: `${formatSOL(totalInvested)} SOL` },
-        { icon: TrendingUp, label: t('summary.totalReturns'), value: `${formatSOL(totalReturns)} SOL` },
+        { icon: Wallet, label: t('summary.totalBalance'), value: formattedBalance, accent: true },
+        { icon: PiggyBank, label: t('summary.totalInvested'), value: formattedInvested },
+        { icon: TrendingUp, label: t('summary.totalReturns'), value: formattedReturns },
         { icon: BarChart3, label: t('summary.activeInvestments'), value: String(activeCount) },
     ];
 

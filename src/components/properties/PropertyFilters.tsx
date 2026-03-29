@@ -2,14 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import { Search, RotateCcw } from 'lucide-react';
-import { usePropertiesStore } from '@/store/usePropertiesStore';
+import { useProperties } from '@/hooks/useProperties';
 import { Button } from '@/components/ui/Button';
 import { CITIES } from '@/lib/constants';
 
 export function PropertyFilters() {
     const t = useTranslations('properties.filters');
     const tStatus = useTranslations('properties.status');
-    const { filters, setFilters, resetFilters } = usePropertiesStore();
+    const { filters, setFilters, resetFilters } = useProperties(false);
 
     return (
         <div className="bg-surface border border-border rounded-2xl p-4 mb-8 space-y-4">

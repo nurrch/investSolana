@@ -1,79 +1,38 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowDownUp, Info, Check, ChevronDown, Wallet } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { useSwapStore } from '@/store/useSwapStore';
-import { useWalletStore } from '@/store/useWalletStore';
-import { executeSwap } from '@/actions/swap';
+import { useSwap } from '@/hooks/useSwap';
 import { formatSOL, formatNumber } from '@/lib/utils';
-import type { SwapTransaction } from '@/lib/types';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+
 
 export default function SwapPage() {
     const t = useTranslations('swap');
+
     const {
         inputToken,
         inputAmount,
         quote,
         history,
         isSwapping,
+        balance,
+        isConnected,
+        currentBalance,
+        amountNum,
+        insufficient,
+        canSwap,
+        success,
         setInputToken,
         setInputAmount,
-        addTransaction,
-        loadHistory,
-        setSwapping,
-        reset,
-    } = useSwapStore();
-
-    const balance = useWalletStore((s) => s.balance);
-    const walletAddress = useWalletStore((s) => s.address);
-    const isConnected = useWalletStore((s) => s.isConnected);
-    const tokenBalances = useWalletStore((s) => s.tokenBalances);
-    const addBalance = useWalletStore((s) => s.addBalance);
-    const setTokenBalance = useWalletStore((s) => s.setTokenBalance);
+        handleSwap,
+        clearSuccess,
+    } = useSwap();
     const { setVisible } = useWalletModal();
-
-    const [success, setSuccess] = useState<{ amount: number } | null>(null);
-
-    useEffect(() => {
-        if (walletAddress) loadHistory(walletAddress);
-    }, [walletAddress, loadHistory]);
-
-    const currentBalance = tokenBalances[inputToken];
-    const amountNum = parseFloat(inputAmount) || 0;
-    const insufficient = amountNum > currentBalance;
-    const canSwap = amountNum > 0 && !insufficient && quote !== null;
-
-    const handleSwap = async () => {
-        if (!canSwap || !quote || !walletAddress) return;
-
-        setSwapping(true);
-
-        const result = await executeSwap(inputToken, amountNum, walletAddress);
-
-        addBalance(result.outputAmount);
-        setTokenBalance(inputToken, currentBalance - amountNum);
-
-        const tx: SwapTransaction = {
-            id: `sw-${Date.now()}`,
-            inputToken,
-            inputAmount: amountNum,
-            outputAmount: result.outputAmount,
-            rate: result.quote.rate,
-            date: new Date().toISOString().split('T')[0],
-            status: 'completed',
-        };
-        addTransaction(tx);
-
-        setSuccess({ amount: result.outputAmount });
-        setSwapping(false);
-        reset();
-    };
 
     if (!isConnected) {
         return (
@@ -112,7 +71,7 @@ export default function SwapPage() {
                             <p className="text-muted">
                                 {t('received')}: <span className="text-foreground font-bold">{formatSOL(success.amount)} SOL</span>
                             </p>
-                            <Button variant="outline" onClick={() => setSuccess(null)}>
+                            <Button variant="outline" onClick={clearSuccess}>
                                 Ещё раз
                             </Button>
                         </div>

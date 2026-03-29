@@ -11,6 +11,7 @@ const navItems = [
     { key: 'properties', href: '/properties', icon: Building2 },
     { key: 'swap', href: '/swap', icon: ArrowLeftRight },
     { key: 'portfolio', href: '/portfolio', icon: Briefcase },
+    { key: 'admin', href: '/admin', icon: Briefcase },
 ] as const;
 
 export function SideNav() {

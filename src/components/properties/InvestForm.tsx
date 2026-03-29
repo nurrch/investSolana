@@ -1,14 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { useWalletStore } from '@/store/useWalletStore';
-import { usePropertiesStore } from '@/store/usePropertiesStore';
-import { investInProperty } from '@/actions/properties';
+import { useInvest } from '@/hooks/useInvest';
 import { formatSOL } from '@/lib/utils';
-import type { Property, Investment } from '@/lib/types';
+import type { Property } from '@/lib/types';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 interface InvestFormProps {
@@ -17,55 +14,22 @@ interface InvestFormProps {
 
 export function InvestForm({ property }: InvestFormProps) {
     const t = useTranslations('property.investment');
-    const balance = useWalletStore((s) => s.balance);
-    const walletAddress = useWalletStore((s) => s.address);
-    const isConnected = useWalletStore((s) => s.isConnected);
-    const subtractBalance = useWalletStore((s) => s.subtractBalance);
-    const addInvestment = usePropertiesStore((s) => s.addInvestment);
+    const {
+        balance,
+        isConnected,
+        amount,
+        setAmount,
+        amountNum,
+        tokensReceived,
+        insufficient,
+        canInvest,
+        isInvesting,
+        success,
+        handleInvest,
+        clearSuccess,
+        setMax,
+    } = useInvest(property);
     const { setVisible } = useWalletModal();
-
-    const [amount, setAmount] = useState('');
-    const [isInvesting, setIsInvesting] = useState(false);
-    const [success, setSuccess] = useState<{ tokens: number } | null>(null);
-
-    const amountNum = parseFloat(amount) || 0;
-    const tokensReceived = Math.floor(amountNum / property.price.pricePerToken);
-    const insufficient = amountNum > balance;
-    const canInvest = amountNum > 0 && !insufficient && tokensReceived > 0;
-
-    const handleInvest = async () => {
-        if (!canInvest || !walletAddress) return;
-
-        setIsInvesting(true);
-
-        const result = await investInProperty(
-            property.id,
-            walletAddress,
-            amountNum,
-            tokensReceived
-        );
-
-        if (result.success) {
-            subtractBalance(amountNum);
-
-            const investment: Investment = {
-                id: `inv-${Date.now()}`,
-                propertyId: property.id,
-                propertyTitle: property.title,
-                propertyImage: property.images[0]?.url ?? '',
-                amountSOL: amountNum,
-                tokensReceived,
-                date: new Date().toISOString().split('T')[0],
-                roi: property.roi,
-                status: 'active',
-            };
-            addInvestment(investment);
-            setSuccess({ tokens: tokensReceived });
-        }
-
-        setIsInvesting(false);
-        setAmount('');
-    };
 
     if (!isConnected) {
         return (
@@ -89,7 +53,7 @@ export function InvestForm({ property }: InvestFormProps) {
                 <p className="text-sm text-muted">
                     {t('tokensReceived')}: <span className="text-foreground font-medium">{success.tokens}</span>
                 </p>
-                <Button variant="outline" size="sm" onClick={() => setSuccess(null)}>
+                <Button variant="outline" size="sm" onClick={clearSuccess}>
                     Ещё раз
                 </Button>
             </div>
@@ -121,7 +85,7 @@ export function InvestForm({ property }: InvestFormProps) {
                     </span>
                     <button
                         type="button"
-                        onClick={() => setAmount(String(Math.min(balance, (property.tokensTotal - property.tokensSold) * property.price.pricePerToken)))}
+                        onClick={setMax}
                         className="text-xs text-primary hover:text-primary-hover cursor-pointer"
                     >
                         MAX

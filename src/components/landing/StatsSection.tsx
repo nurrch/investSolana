@@ -6,7 +6,7 @@ import { Container } from '@/components/ui/Container';
 import { TrendingUp, Building2, Users, BarChart3 } from 'lucide-react';
 import { Animate } from '@/components/ui/Animate';
 import { useInView } from '@/hooks/useInView';
-import { getStats } from '@/actions/properties';
+import { useStats } from '@/hooks/useStats';
 
 function CountUp({ target, suffix = '', decimals = 0 }: { target: number; suffix?: string; decimals?: number }) {
     const [count, setCount] = useState(0);
@@ -38,11 +38,7 @@ function CountUp({ target, suffix = '', decimals = 0 }: { target: number; suffix
 
 export function StatsSection() {
     const t = useTranslations('landing.stats');
-    const [data, setData] = useState({ totalInvested: 2500, totalProperties: 12, totalInvestors: 350, averageRoi: 12.1 });
-
-    useEffect(() => {
-        getStats().then(setData);
-    }, []);
+    const data = useStats();
 
     const stats = [
         { icon: TrendingUp, target: data.totalInvested, suffix: '+', decimals: 0, label: t('invested') },

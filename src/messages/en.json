@@ -5,7 +5,8 @@
             "home": "Home",
             "properties": "Properties",
             "swap": "Swap",
-            "portfolio": "Portfolio"
+            "portfolio": "Portfolio",
+            "admin": "Add Property"
         },
         "connectWallet": "Connect Wallet",
         "balance": "Balance",
