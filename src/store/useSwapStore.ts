@@ -2,7 +2,8 @@
 
 import { create } from 'zustand';
 import type { SwapQuote, SwapTransaction } from '@/lib/types';
-import { MOCK_SWAP_HISTORY, SOL_TO_USD } from '@/lib/constants';
+import { SOL_TO_USD } from '@/lib/constants';
+import { getSwapHistory } from '@/actions/swap';
 
 interface SwapStore {
     inputToken: 'USDT' | 'USDS';
@@ -15,6 +16,7 @@ interface SwapStore {
     setInputToken: (token: 'USDT' | 'USDS') => void;
     setInputAmount: (amount: string) => void;
     calculateQuote: () => void;
+    loadHistory: (wallet: string) => Promise<void>;
     addTransaction: (tx: SwapTransaction) => void;
     setSwapping: (swapping: boolean) => void;
     setError: (error: string | null) => void;
@@ -25,7 +27,7 @@ export const useSwapStore = create<SwapStore>((set, get) => ({
     inputToken: 'USDT',
     inputAmount: '',
     quote: null,
-    history: MOCK_SWAP_HISTORY,
+    history: [],
     isSwapping: false,
     error: null,
 
@@ -63,6 +65,15 @@ export const useSwapStore = create<SwapStore>((set, get) => ({
     },
 
     addTransaction: (tx) => set((s) => ({ history: [tx, ...s.history] })),
+
+    loadHistory: async (wallet: string) => {
+        try {
+            const data = await getSwapHistory(wallet);
+            if (data.length > 0) set({ history: data });
+        } catch {
+            // keep existing history
+        }
+    },
 
     setSwapping: (isSwapping) => set({ isSwapping }),
     setError: (error) => set({ error }),

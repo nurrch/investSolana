@@ -1,12 +1,13 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { PropertyCard } from '@/components/properties/PropertyCard';
-import { MOCK_PROPERTIES } from '@/lib/constants';
+import { usePropertiesStore } from '@/store/usePropertiesStore';
 import { Animate } from '@/components/ui/Animate';
 
 export function FeaturedProperties() {
@@ -14,7 +15,13 @@ export function FeaturedProperties() {
     const tCommon = useTranslations('common');
     const locale = useLocale();
 
-    const properties = MOCK_PROPERTIES.filter((p) => p.status === 'active').slice(0, 4);
+    const { properties: allProperties, loadProperties } = usePropertiesStore();
+
+    useEffect(() => {
+        loadProperties();
+    }, [loadProperties]);
+
+    const properties = allProperties.filter((p) => p.status === 'active').slice(0, 4);
 
     return (
         <section className="py-24">

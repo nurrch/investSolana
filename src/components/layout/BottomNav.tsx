@@ -19,6 +19,7 @@ export function SideNav() {
     const pathname = usePathname();
 
     const isActive = (href: string) => {
+        if (!pathname) return false;
         const full = `/${locale}${href}`;
         if (href === '') return pathname === `/${locale}` || pathname === `/${locale}/`;
         return pathname.startsWith(full);

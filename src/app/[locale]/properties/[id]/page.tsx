@@ -14,7 +14,8 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { InvestForm } from '@/components/properties/InvestForm';
 import { PropertyCard } from '@/components/properties/PropertyCard';
-import { MOCK_PROPERTIES } from '@/lib/constants';
+import { usePropertiesStore } from '@/store/usePropertiesStore';
+import { getPropertyById } from '@/actions/properties';
 import { formatSOL, getFundingPercent } from '@/lib/utils';
 import type { Property } from '@/lib/types';
 
@@ -24,20 +25,20 @@ export default function PropertyDetailPage() {
     const tCommon = useTranslations('common');
     const locale = useLocale();
     const params = useParams();
-    const id = params.id as string;
+    const id = params?.id as string;
 
     const [property, setProperty] = useState<Property | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0);
+    const { properties: allProperties, loadProperties } = usePropertiesStore();
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            const found = MOCK_PROPERTIES.find((p) => p.id === id) ?? null;
-            setProperty(found);
+        loadProperties();
+        getPropertyById(id).then((p) => {
+            setProperty(p);
             setLoading(false);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [id]);
+        });
+    }, [id, loadProperties]);
 
     if (loading) {
         return (
@@ -92,7 +93,7 @@ export default function PropertyDetailPage() {
         { icon: Landmark, label: t('specs.developer'), value: property.developer },
     ];
 
-    const similar = MOCK_PROPERTIES.filter(
+    const similar = allProperties.filter(
         (p) => p.id !== property.id && p.location.city === property.location.city
     ).slice(0, 3);
 

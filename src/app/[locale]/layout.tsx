@@ -4,6 +4,7 @@ import { routing } from '@/i18n/routing';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { SideNav } from '@/components/layout/BottomNav';
+import { SolanaWalletProvider } from '@/components/wallet/SolanaWalletProvider';
 
 export default async function LocaleLayout({
     children,
@@ -21,10 +22,12 @@ export default async function LocaleLayout({
 
     return (
         <NextIntlClientProvider locale={locale} messages={messages}>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <SideNav />
+            <SolanaWalletProvider>
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+                <SideNav />
+            </SolanaWalletProvider>
         </NextIntlClientProvider>
     );
 }

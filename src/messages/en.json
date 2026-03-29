@@ -193,5 +193,54 @@
             "privacy": "Privacy"
         },
         "rights": "All rights reserved"
+    },
+    "admin": {
+        "title": "Property Management",
+        "subtitle": "Add and edit real estate properties",
+        "addProperty": "Add Property",
+        "editProperty": "Edit Property",
+        "confirmDelete": "Delete this property? This action cannot be undone.",
+        "deleted": "Property deleted successfully",
+        "created": "Property created successfully",
+        "updated": "Property updated successfully",
+        "requiredFields": "Required fields: name, location",
+        "empty": "No properties yet. Add your first one!",
+        "form": {
+            "name": "Name",
+            "description": "Description",
+            "location": "Location (city, district, address)",
+            "imageUrl": "Image URL",
+            "image": "Property Photo",
+            "uploadImage": "Upload Photo",
+            "uploading": "Uploading...",
+            "removeImage": "Remove Photo",
+            "tokenMint": "Token Mint (Solana)",
+            "totalPrice": "Total Price (USD)",
+            "pricePerToken": "Price per Token (USD)",
+            "totalSupply": "Total Token Supply",
+            "roi": "ROI (%)",
+            "area": "Area (m²)",
+            "rooms": "Rooms",
+            "floor": "Floor",
+            "totalFloors": "Total Floors",
+            "yearBuilt": "Year Built",
+            "developer": "Developer",
+            "propertyType": "Property Type",
+            "status": "Status",
+            "create": "Create Property",
+            "save": "Save Changes",
+            "cancel": "Cancel",
+            "types": {
+                "apartment": "Apartment",
+                "house": "House",
+                "commercial": "Commercial"
+            },
+            "statuses": {
+                "upcoming": "Upcoming",
+                "active": "Active",
+                "funded": "Funded",
+                "completed": "Completed"
+            }
+        }
     }
 }

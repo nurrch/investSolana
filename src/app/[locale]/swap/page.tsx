@@ -1,16 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowDownUp, Info, Check, ChevronDown } from 'lucide-react';
+import { ArrowDownUp, Info, Check, ChevronDown, Wallet } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { useSwapStore } from '@/store/useSwapStore';
 import { useWalletStore } from '@/store/useWalletStore';
+import { executeSwap } from '@/actions/swap';
 import { formatSOL, formatNumber } from '@/lib/utils';
 import type { SwapTransaction } from '@/lib/types';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 export default function SwapPage() {
     const t = useTranslations('swap');
@@ -23,16 +25,24 @@ export default function SwapPage() {
         setInputToken,
         setInputAmount,
         addTransaction,
+        loadHistory,
         setSwapping,
         reset,
     } = useSwapStore();
 
     const balance = useWalletStore((s) => s.balance);
+    const walletAddress = useWalletStore((s) => s.address);
+    const isConnected = useWalletStore((s) => s.isConnected);
     const tokenBalances = useWalletStore((s) => s.tokenBalances);
     const addBalance = useWalletStore((s) => s.addBalance);
     const setTokenBalance = useWalletStore((s) => s.setTokenBalance);
+    const { setVisible } = useWalletModal();
 
     const [success, setSuccess] = useState<{ amount: number } | null>(null);
+
+    useEffect(() => {
+        if (walletAddress) loadHistory(walletAddress);
+    }, [walletAddress, loadHistory]);
 
     const currentBalance = tokenBalances[inputToken];
     const amountNum = parseFloat(inputAmount) || 0;
@@ -40,31 +50,47 @@ export default function SwapPage() {
     const canSwap = amountNum > 0 && !insufficient && quote !== null;
 
     const handleSwap = async () => {
-        if (!canSwap || !quote) return;
+        if (!canSwap || !quote || !walletAddress) return;
 
         setSwapping(true);
-        await new Promise((resolve) => setTimeout(resolve, 1200));
 
-        // Update balances
-        addBalance(quote.outputAmount);
+        const result = await executeSwap(inputToken, amountNum, walletAddress);
+
+        addBalance(result.outputAmount);
         setTokenBalance(inputToken, currentBalance - amountNum);
 
-        // Add to history
         const tx: SwapTransaction = {
             id: `sw-${Date.now()}`,
             inputToken,
             inputAmount: amountNum,
-            outputAmount: quote.outputAmount,
-            rate: quote.rate,
+            outputAmount: result.outputAmount,
+            rate: result.quote.rate,
             date: new Date().toISOString().split('T')[0],
             status: 'completed',
         };
         addTransaction(tx);
 
-        setSuccess({ amount: quote.outputAmount });
+        setSuccess({ amount: result.outputAmount });
         setSwapping(false);
         reset();
     };
+
+    if (!isConnected) {
+        return (
+            <section className="py-20">
+                <Container className="max-w-xl text-center">
+                    <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-primary/10 mb-6 mx-auto">
+                        <Wallet className="h-10 w-10 text-primary" />
+                    </div>
+                    <h1 className="text-2xl font-bold mb-3">Подключите кошелёк</h1>
+                    <p className="text-muted mb-8">Для обмена токенов необходимо подключить Solana-кошелёк</p>
+                    <Button size="lg" onClick={() => setVisible(true)}>
+                        Connect Wallet
+                    </Button>
+                </Container>
+            </section>
+        );
+    }
 
     return (
         <section className="py-12">

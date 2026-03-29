@@ -1,7 +1,6 @@
 'use client';
 
 import { create } from 'zustand';
-import { DEFAULT_WALLET } from '@/lib/constants';
 import type { WalletState } from '@/lib/types';
 
 interface WalletStore extends WalletState {
@@ -14,10 +13,10 @@ interface WalletStore extends WalletState {
 }
 
 export const useWalletStore = create<WalletStore>((set) => ({
-    address: DEFAULT_WALLET.address,
-    balance: DEFAULT_WALLET.balance,
-    isConnected: DEFAULT_WALLET.isConnected,
-    tokenBalances: { ...DEFAULT_WALLET.tokenBalances },
+    address: null,
+    balance: 0,
+    isConnected: false,
+    tokenBalances: { USDT: 0, USDS: 0 },
 
     setBalance: (balance) => set({ balance }),
     addBalance: (amount) => set((s) => ({ balance: s.balance + amount })),
