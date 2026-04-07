@@ -117,14 +117,16 @@ export async function deleteAsset(
 
 export async function createListing(
     assetId: string,
-    price: number
+    sellerWallet: string,
+    amount: number,
+    pricePerToken: number
 ): Promise<{ success: boolean; id?: string; error?: string }> {
     try {
-        const result = await apiFetch<{ _id: string }>('/listings', {
+        const result = await apiFetch<{ id: string }>('/listings', {
             method: 'POST',
-            body: JSON.stringify({ assetId, price }),
+            body: JSON.stringify({ assetId, sellerWallet, amount, pricePerToken }),
         });
-        return { success: true, id: result._id };
+        return { success: true, id: result.id };
     } catch (e) {
         return { success: false, error: e instanceof Error ? e.message : 'Unknown error' };
     }

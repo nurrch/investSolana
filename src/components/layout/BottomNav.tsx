@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Home, Building2, ArrowLeftRight, Briefcase } from 'lucide-react';
+import { Home, Building2, ArrowLeftRight, Briefcase, HousePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -11,7 +11,7 @@ const navItems = [
     { key: 'properties', href: '/properties', icon: Building2 },
     { key: 'swap', href: '/swap', icon: ArrowLeftRight },
     { key: 'portfolio', href: '/portfolio', icon: Briefcase },
-    { key: 'admin', href: '/admin', icon: Briefcase },
+    { key: 'admin', href: '/admin', icon: HousePlus },
 ] as const;
 
 export function SideNav() {

@@ -6,6 +6,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Wallet, LogOut } from 'lucide-react';
 import { useWalletStore } from '@/store/useWalletStore';
+import { getOrCreateUser } from '@/actions/wallet';
 import { formatSOL } from '@/lib/utils';
 
 export function WalletButton() {
@@ -16,20 +17,28 @@ export function WalletButton() {
     const storeConnect = useWalletStore((s) => s.connect);
     const storeDisconnect = useWalletStore((s) => s.disconnect);
     const setBalance = useWalletStore((s) => s.setBalance);
+    const setTokenBalance = useWalletStore((s) => s.setTokenBalance);
     const balance = useWalletStore((s) => s.balance);
     const isConnected = useWalletStore((s) => s.isConnected);
 
     // Sync wallet adapter → store
     useEffect(() => {
         if (connected && publicKey) {
-            storeConnect(publicKey.toBase58());
+            const addr = publicKey.toBase58();
+            storeConnect(addr);
+            // Fetch SOL balance from chain
             connection.getBalance(publicKey).then((lamports) => {
                 setBalance(lamports / LAMPORTS_PER_SOL);
+            }).catch(() => { });
+            // Fetch USDT/USDS balances from backend
+            getOrCreateUser(addr).then((user) => {
+                setTokenBalance('USDT', user.usdt);
+                setTokenBalance('USDS', user.usds);
             }).catch(() => { });
         } else if (!connected) {
             storeDisconnect();
         }
-    }, [connected, publicKey, connection, storeConnect, storeDisconnect, setBalance]);
+    }, [connected, publicKey, connection, storeConnect, storeDisconnect, setBalance, setTokenBalance]);
 
     const handleClick = () => {
         if (connected) {

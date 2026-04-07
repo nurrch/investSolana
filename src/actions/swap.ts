@@ -66,9 +66,33 @@ export async function executeSwap(
     return { success: true, outputAmount, txHash, quote };
 }
 
+interface BackendSwap {
+    id: string;
+    wallet: string;
+    fromToken: string;
+    toToken: string;
+    amountIn: number;
+    amountOut: number;
+    txHash?: string;
+    createdAt: string;
+}
+
+function mapSwap(s: BackendSwap): SwapTransaction {
+    return {
+        id: s.id,
+        inputToken: s.fromToken as 'USDT' | 'USDS',
+        inputAmount: s.amountIn,
+        outputAmount: s.amountOut,
+        rate: s.amountIn / (s.amountOut || 1),
+        date: s.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+        status: 'completed',
+    };
+}
+
 export async function getSwapHistory(wallet: string): Promise<SwapTransaction[]> {
     try {
-        return await apiFetch<SwapTransaction[]>(`/swaps?wallet=${encodeURIComponent(wallet)}`);
+        const raw = await apiFetch<BackendSwap[]>(`/swaps?wallet=${encodeURIComponent(wallet)}`);
+        return raw.map(mapSwap);
     } catch {
         return [];
     }

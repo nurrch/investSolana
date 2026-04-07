@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { useWalletStore } from '@/store/useWalletStore';
 import { usePropertiesStore } from '@/store/usePropertiesStore';
 import { investInProperty } from '@/actions/properties';
+import { getOrCreateUser } from '@/actions/wallet';
 import type { Property, Investment } from '@/lib/types';
 
 export function useInvest(property: Property) {
@@ -11,6 +12,7 @@ export function useInvest(property: Property) {
     const walletAddress = useWalletStore((s) => s.address);
     const isConnected = useWalletStore((s) => s.isConnected);
     const subtractBalance = useWalletStore((s) => s.subtractBalance);
+    const setTokenBalance = useWalletStore((s) => s.setTokenBalance);
     const addInvestment = usePropertiesStore((s) => s.addInvestment);
 
     const [amount, setAmount] = useState('');
@@ -54,11 +56,17 @@ export function useInvest(property: Property) {
             };
             addInvestment(investment);
             setSuccess({ tokens: tokensReceived });
+
+            // Refresh real balances from backend
+            getOrCreateUser(walletAddress).then((user) => {
+                setTokenBalance('USDT', user.usdt);
+                setTokenBalance('USDS', user.usds);
+            }).catch(() => { });
         }
 
         setIsInvesting(false);
         setAmount('');
-    }, [canInvest, walletAddress, property, amountNum, tokensReceived, subtractBalance, addInvestment]);
+    }, [canInvest, walletAddress, property, amountNum, tokensReceived, subtractBalance, setTokenBalance, addInvestment]);
 
     const clearSuccess = useCallback(() => setSuccess(null), []);
     const setMax = useCallback(() => setAmount(String(maxAmount)), [maxAmount]);

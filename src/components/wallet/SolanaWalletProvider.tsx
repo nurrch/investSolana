@@ -1,22 +1,31 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { Buffer } from 'buffer';
+import { type WalletError } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 
 import '@solana/wallet-adapter-react-ui/styles.css';
 
-// Fast public RPC with higher rate limits
-const RPC_ENDPOINT = 'https://solana-mainnet.g.alchemy.com/v2/demo';
+// Polyfill Buffer for @solana/web3.js in browser
+if (typeof window !== 'undefined') {
+    window.Buffer = window.Buffer || Buffer;
+}
+
+const RPC_ENDPOINT = 'https://api.mainnet-beta.solana.com';
 
 export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
-    const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
+    // Empty array — Wallet Standard auto-detects Phantom, Solflare, etc.
+    const wallets = useMemo(() => [], []);
+
+    const onError = useCallback((error: WalletError) => {
+        console.error('[Wallet]', error);
+    }, []);
 
     return (
         <ConnectionProvider endpoint={RPC_ENDPOINT}>
-            <WalletProvider wallets={wallets} autoConnect={false}>
+            <WalletProvider wallets={wallets} onError={onError} autoConnect>
                 <WalletModalProvider>
                     {children}
                 </WalletModalProvider>

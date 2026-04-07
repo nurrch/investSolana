@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSwapStore } from '@/store/useSwapStore';
 import { useWalletStore } from '@/store/useWalletStore';
 import { executeSwap } from '@/actions/swap';
+import { getOrCreateUser } from '@/actions/wallet';
 import type { SwapTransaction } from '@/lib/types';
 
 export function useSwap() {
@@ -46,6 +47,12 @@ export function useSwap() {
 
         addBalance(result.outputAmount);
         setTokenBalance(inputToken, currentBalance - amountNum);
+
+        // Refresh real balances from backend
+        getOrCreateUser(walletAddress).then((user) => {
+            setTokenBalance('USDT', user.usdt);
+            setTokenBalance('USDS', user.usds);
+        }).catch(() => { });
 
         const tx: SwapTransaction = {
             id: `sw-${Date.now()}`,
